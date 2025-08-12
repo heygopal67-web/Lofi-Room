@@ -1,6 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const TOTAL_BACKGROUNDS = 10;
+
+// Static mapping to music files placed in public/bgm
+// Order matches room index 1..10
+const TRACKS: { src: string; title: string }[] = [
+  {
+    src: "/bgm/good-night-lofi-cozy-cafe-1.mp3",
+    title: "Good Night Lofi — Cozy Cafe",
+  },
+  {
+    src: "/bgm/lofi-relax-music-lofium-2.mp3",
+    title: "Lofi Relax Music — Lofium",
+  },
+  { src: "/bgm/lofi-295209.mp3", title: "Lofi 295209" },
+  { src: "/bgm/lofi-relax-lofi-4.mp3", title: "Lofi Relax" },
+  { src: "/bgm/spring-lofi-vibes-lofi-5.mp3", title: "Spring Lofi Vibes" },
+  {
+    src: "/bgm/walking-dreaming-chill-lofi-6.mp3",
+    title: "Walking Dreaming Chill Lofi",
+  },
+  {
+    src: "/bgm/focus-zone-relax-mellow-lofi-7.mp3",
+    title: "Focus Zone — Relax & Mellow",
+  },
+  { src: "/bgm/lofi-background-music-8.mp3", title: "Lofi Background Music" },
+  { src: "/bgm/rainy-lofi-city-lofi-9.mp3", title: "Rainy Lofi City" },
+  { src: "/bgm/lofi-girl-lofi-ambient-10.mp3", title: "Lofi Girl — Ambient" },
+];
 const IMAGE_FADE_MS = 700; // 0.7s crossfade for GIFs
 const AUDIO_CROSSFADE_MS = 800; // 0.8s audio crossfade
 const VOLUME_FADE_MS = 300; // quick fade for mute/unmute
@@ -11,7 +38,8 @@ function getBgSrc(index: number): string {
 }
 
 function getMusicSrc(index: number): string {
-  return `/music${index + 1}.mp3`;
+  const track = TRACKS[index];
+  return track ? track.src : `/music${index + 1}.mp3`;
 }
 
 export default function App() {
@@ -28,7 +56,7 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [roomTitles, setRoomTitles] = useState<string[]>(
-    Array.from({ length: TOTAL_BACKGROUNDS }, (_, i) => `Lofi Room ${i + 1}`)
+    TRACKS.map((t, i) => `${t.title} — room ${i + 1}`)
   );
 
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -72,7 +100,7 @@ export default function App() {
   }, []);
 
   const getRoomTitle = (index: number): string =>
-    roomTitles[index] ?? `Lofi Room ${index + 1}`;
+    roomTitles[index] ?? TRACKS[index]?.title ?? `Room ${index + 1}`;
 
   // Clear any running fade interval on unmount
   useEffect(() => {
@@ -364,8 +392,7 @@ export default function App() {
       {/* Top-left listening now */}
       <div className="absolute left-4 top-4 z-20 text-white/90 drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]">
         <div className="mb-1 text-sm uppercase tracking-widest">
-          listening now: {getRoomTitle(currentIndex)} — room {currentIndex + 1}
-          /10
+          listening now: {getRoomTitle(currentIndex)}
         </div>
         <div className="h-1 w-64 overflow-hidden rounded bg-white/20">
           <div className="h-full w-1/3 animate-pulse bg-white/70" />
@@ -493,7 +520,7 @@ export default function App() {
               </svg>
             </button>
             <span className="truncate max-w-[60vw] sm:max-w-[40vw] md:max-w-[30vw]">
-              {getRoomTitle(currentIndex)} — room {currentIndex + 1}/10
+              {getRoomTitle(currentIndex)}/10
             </span>
           </div>
         </div>
