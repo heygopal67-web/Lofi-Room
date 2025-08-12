@@ -27,6 +27,9 @@ export default function App() {
   const [isAutoRotate, setIsAutoRotate] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [roomTitles, setRoomTitles] = useState<string[]>(
+    Array.from({ length: TOTAL_BACKGROUNDS }, (_, i) => `Lofi Room ${i + 1}`)
+  );
 
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const nextAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -40,6 +43,36 @@ export default function App() {
     setLayerSrcs([getBgSrc(currentIndex), getBgSrc(currentIndex)]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Load optional titles from public/rooms.json
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch("/rooms.json", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          if (
+            data.every((t) => typeof t === "string") &&
+            data.length === TOTAL_BACKGROUNDS
+          ) {
+            setRoomTitles(data as string[]);
+          } else if (
+            data.every((t: any) => typeof t?.title === "string") &&
+            data.length === TOTAL_BACKGROUNDS
+          ) {
+            setRoomTitles((data as { title: string }[]).map((x) => x.title));
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    void load();
+  }, []);
+
+  const getRoomTitle = (index: number): string =>
+    roomTitles[index] ?? `Lofi Room ${index + 1}`;
 
   // Clear any running fade interval on unmount
   useEffect(() => {
@@ -310,11 +343,13 @@ export default function App() {
                 >
                   <img
                     src={getBgSrc(i)}
-                    alt={`Room ${i + 1}`}
+                    alt={`${getRoomTitle(i)} — room ${i + 1}`}
                     className="h-40 w-full object-cover"
                   />
                   <div className="flex items-center justify-between px-2 py-1 text-xs">
-                    <span className="truncate opacity-90">Room {i + 1}</span>
+                    <span className="truncate opacity-90">
+                      {getRoomTitle(i)} — {i + 1}
+                    </span>
                     <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] text-emerald-300">
                       Select
                     </span>
@@ -329,7 +364,8 @@ export default function App() {
       {/* Top-left listening now */}
       <div className="absolute left-4 top-4 z-20 text-white/90 drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]">
         <div className="mb-1 text-sm uppercase tracking-widest">
-          listening now {currentIndex + 1}…
+          listening now: {getRoomTitle(currentIndex)} — room {currentIndex + 1}
+          /10
         </div>
         <div className="h-1 w-64 overflow-hidden rounded bg-white/20">
           <div className="h-full w-1/3 animate-pulse bg-white/70" />
@@ -457,8 +493,7 @@ export default function App() {
               </svg>
             </button>
             <span className="truncate max-w-[60vw] sm:max-w-[40vw] md:max-w-[30vw]">
-              coffee shop radio // 24/7 lofi hip-hop beats — room{" "}
-              {currentIndex + 1}/10
+              {getRoomTitle(currentIndex)} — room {currentIndex + 1}/10
             </span>
           </div>
         </div>
