@@ -55,6 +55,7 @@ export default function App() {
   const [isAutoRotate, setIsAutoRotate] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [displayVolume, setDisplayVolume] = useState(0);
   const [roomTitles, setRoomTitles] = useState<string[]>(
     TRACKS.map((t, i) => `${t.title} — room ${i + 1}`)
   );
@@ -139,6 +140,7 @@ export default function App() {
     if (!hasInteracted || !isPlaying) return;
     try {
       await audio.play();
+      setDisplayVolume(audio.volume);
     } catch {
       // Ignore autoplay rejections; will start after next user click
     }
@@ -154,6 +156,7 @@ export default function App() {
       a.loop = true;
       a.volume = targetVolume;
       currentAudioRef.current = a;
+      setDisplayVolume(a.volume);
       await startAudioIfAllowed(a);
       return;
     }
@@ -190,6 +193,9 @@ export default function App() {
       // Fade in next towards targetVolume
       next.volume = Math.min(targetVolume, targetVolume * t);
 
+      // Update visual volume to the louder of both during crossfade
+      setDisplayVolume(Math.max(current.volume, next.volume));
+
       if (t >= 1) {
         clearFadeInterval();
         // Stop current and switch references
@@ -201,6 +207,7 @@ export default function App() {
         }
         currentAudioRef.current = next;
         nextAudioRef.current = null;
+        setDisplayVolume(currentAudioRef.current.volume);
       }
     }, intervalMs);
   };
@@ -218,6 +225,7 @@ export default function App() {
       step += 1;
       const t = Math.min(1, step / steps);
       audio.volume = start + (toVolume - start) * t;
+      setDisplayVolume(audio.volume);
       if (t >= 1) {
         clearFadeInterval();
       }
@@ -293,6 +301,7 @@ export default function App() {
       audio.volume = isMuted ? 0 : 1;
       try {
         await audio.play();
+        setDisplayVolume(audio.volume);
       } catch {
         // ignore; will play on next user gesture
       }
@@ -315,6 +324,9 @@ export default function App() {
       void crossfadeToIndex(currentIndex);
     }
   };
+
+  // Number of bars to fill based on current displayVolume
+  const filledBars = Math.max(0, Math.min(12, Math.round(displayVolume * 12)));
 
   return (
     <div
@@ -485,9 +497,9 @@ export default function App() {
                     className={`inline-block h-3 w-1 rounded-sm ${
                       isMuted
                         ? "bg-white/20"
-                        : i < 9
+                        : i < filledBars
                         ? "bg-white/80"
-                        : "bg-white/40"
+                        : "bg-white/30"
                     }`}
                   />
                 ))}
