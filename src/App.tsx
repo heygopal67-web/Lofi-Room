@@ -25,6 +25,7 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isAutoRotate, setIsAutoRotate] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const nextAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -69,7 +70,8 @@ export default function App() {
   };
 
   const startAudioIfAllowed = async (audio: HTMLAudioElement) => {
-    if (!hasInteracted) return; // Defer until first user interaction
+    // Defer until first user interaction and only when play state is ON
+    if (!hasInteracted || !isPlaying) return;
     try {
       await audio.play();
     } catch {
@@ -205,6 +207,33 @@ export default function App() {
     setIsAutoRotate((prev) => !prev);
   };
 
+  const handlePlayPause = async () => {
+    const audio = currentAudioRef.current;
+    if (isPlaying) {
+      // Pause with a short fade
+      fadeCurrentVolumeTo(0, 250);
+      setTimeout(() => {
+        currentAudioRef.current?.pause();
+      }, 260);
+      setIsPlaying(false);
+      return;
+    }
+
+    // Turn on playing
+    setIsPlaying(true);
+    if (!audio) {
+      // Start current track
+      await crossfadeToIndex(currentIndex);
+    } else {
+      audio.volume = isMuted ? 0 : 1;
+      try {
+        await audio.play();
+      } catch {
+        // ignore; will play on next user gesture
+      }
+    }
+  };
+
   // Start playback on first user interaction (any click inside the app)
   const handleFirstInteraction = () => {
     if (!hasInteracted) {
@@ -235,46 +264,96 @@ export default function App() {
         }`}
       />
 
-      {/* Controls */}
-      <div className="pointer-events-none absolute inset-0 z-10 flex items-end justify-end p-4">
-        <div className="pointer-events-auto mb-2 flex gap-2">
-          <button
-            onClick={handlePrev}
-            className="bg-white/20 text-white px-4 py-2 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-all hover:scale-105"
-            aria-label="Previous background"
-          >
-            ⬅
-          </button>
-          <button
-            onClick={handleToggleAutoRotate}
-            className={`bg-white/20 text-white px-4 py-2 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-all hover:scale-105 ${
-              isAutoRotate ? "ring-1 ring-white/50" : ""
-            }`}
-            aria-label={
-              isAutoRotate
-                ? "Disable auto room change"
-                : "Enable auto room change"
-            }
-            title={
-              isAutoRotate ? "Auto room change: ON" : "Auto room change: OFF"
-            }
-          >
-            {isAutoRotate ? "⏸️" : "▶️"}
-          </button>
-          <button
-            onClick={handleToggleMute}
-            className="bg-white/20 text-white px-4 py-2 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-all hover:scale-105"
-            aria-label={isMuted ? "Unmute" : "Mute"}
-          >
-            {isMuted ? "🔇" : "🔊"}
-          </button>
-          <button
-            onClick={handleNext}
-            className="bg-white/20 text-white px-4 py-2 rounded-lg backdrop-blur-sm hover:bg-white/30 transition-all hover:scale-105"
-            aria-label="Next background"
-          >
-            ➡
-          </button>
+      {/* CRT overlay */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-10 opacity-20 mix-blend-overlay"
+        style={{
+          background:
+            "repeating-linear-gradient(0deg, rgba(255,255,255,0.15) 0px, rgba(255,255,255,0.15) 1px, rgba(0,0,0,0) 2px)",
+        }}
+      />
+
+      {/* Top-left listening now */}
+      <div className="absolute left-4 top-4 z-20 text-white/90 drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]">
+        <div className="mb-1 text-sm uppercase tracking-widest">
+          listening now {currentIndex + 1}…
+        </div>
+        <div className="h-1 w-64 overflow-hidden rounded bg-white/20">
+          <div className="h-full w-1/3 animate-pulse bg-white/70" />
+        </div>
+      </div>
+
+      {/* Bottom-left player bar */}
+      <div className="pointer-events-none absolute inset-0 z-20 flex items-end justify-start p-4">
+        <div className="pointer-events-auto mb-1 max-w-[min(96vw,980px)] rounded-md border border-white/10 bg-black/35 px-3 py-2 text-white shadow-lg backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handlePlayPause}
+              className="rounded-md bg-white/15 px-3 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
+              aria-label={isPlaying ? "Pause" : "Play"}
+              title={isPlaying ? "Pause" : "Play"}
+            >
+              {isPlaying ? "⏸" : "▶"}
+            </button>
+            <button
+              onClick={handlePrev}
+              className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
+              aria-label="Previous background"
+            >
+              ⏮
+            </button>
+            <button
+              onClick={handleNext}
+              className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
+              aria-label="Next background"
+            >
+              ⏭
+            </button>
+            <button
+              onClick={handleToggleMute}
+              className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
+              aria-label={isMuted ? "Unmute" : "Mute"}
+              title={isMuted ? "Unmute" : "Mute"}
+            >
+              {isMuted ? "🔇" : "🔊"}
+            </button>
+            <button
+              onClick={handleToggleAutoRotate}
+              className={`rounded-md px-2 py-1 text-lg transition active:scale-95 ${
+                isAutoRotate ? "bg-white/30" : "bg-white/15 hover:bg-white/25"
+              }`}
+              aria-label={
+                isAutoRotate
+                  ? "Disable auto room change"
+                  : "Enable auto room change"
+              }
+            >
+              🔁
+            </button>
+
+            {/* Volume indicator */}
+            <div className="flex items-center gap-1 pl-2 pr-3">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`inline-block h-3 w-1 rounded-sm ${
+                    isMuted
+                      ? "bg-white/20"
+                      : i < 9
+                      ? "bg-white/80"
+                      : "bg-white/40"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Track label */}
+            <div className="truncate text-sm opacity-90">
+              ♪ coffee shop radio // 24/7 lofi hip-hop beats — room{" "}
+              {currentIndex + 1}/10
+            </div>
+          </div>
         </div>
       </div>
     </div>
