@@ -341,92 +341,80 @@ export default function App() {
         <div className="pointer-events-auto mb-1 max-w-[min(96vw,980px)] rounded-md border border-white/10 bg-black/35 px-3 py-2 text-white shadow-lg backdrop-blur-sm">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-3">
-            <button
-              onClick={handlePlayPause}
-              className="rounded-md bg-white/15 px-3 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
-              aria-label={isPlaying ? "Pause" : "Play"}
-              title={isPlaying ? "Pause" : "Play"}
-            >
-              {isPlaying ? (
+              <button
+                onClick={handlePlayPause}
+                className="rounded-md bg-white/15 px-3 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
+                aria-label={isPlaying ? "Pause" : "Play"}
+                title={isPlaying ? "Pause" : "Play"}
+              >
+                {isPlaying ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                )}
+              </button>
+              <button
+                onClick={handlePrev}
+                className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
+                aria-label="Previous background"
+              >
                 <svg
                   viewBox="0 0 24 24"
                   fill="currentColor"
                   className="h-5 w-5"
                 >
-                  <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+                  <path d="M6 6h2v12H6zM20 6v12L9 12z" />
                 </svg>
-              ) : (
+              </button>
+              <button
+                onClick={handleNext}
+                className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
+                aria-label="Next background"
+              >
                 <svg
                   viewBox="0 0 24 24"
                   fill="currentColor"
                   className="h-5 w-5"
                 >
-                  <path d="M8 5v14l11-7z" />
+                  <path d="M16 6h2v12h-2zM4 6l11 6-11 6z" />
                 </svg>
-              )}
-            </button>
-            <button
-              onClick={handlePrev}
-              className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
-              aria-label="Previous background"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                <path d="M6 6h2v12H6zM20 6v12L9 12z" />
-              </svg>
-            </button>
-            <button
-              onClick={handleNext}
-              className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
-              aria-label="Next background"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                <path d="M16 6h2v12h-2zM4 6l11 6-11 6z" />
-              </svg>
-            </button>
-            <button
-              onClick={handleToggleMute}
-              className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
-              aria-label={isMuted ? "Unmute" : "Mute"}
-              title={isMuted ? "Unmute" : "Mute"}
-            >
-              {isMuted ? (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-5 w-5"
-                >
-                  <path d="M5 9v6h4l5 5V4L9 9H5zm12.59.59L16.17 11l1.42 1.41L19.41 11l1.41 1.41 1.41-1.41L20.83 9.59l1.4-1.41-1.41-1.41L19.41 8.17l-1.41-1.4-1.41 1.41 1.41 1.41z" />
-                </svg>
-              ) : (
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-5 w-5"
-                >
-                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM14 3.23v2.06c2.89 1.09 5 3.9 5 7.71s-2.11 6.62-5 7.71v2.06c4.01-1.17 7-4.93 7-9.77s-2.99-8.6-7-9.77z" />
-                </svg>
-              )}
-            </button>
-            <button
-              onClick={handleToggleAutoRotate}
-              className={`rounded-md px-2 py-1 text-lg transition active:scale-95 ${
-                isAutoRotate ? "bg-white/30" : "bg-white/15 hover:bg-white/25"
-              }`}
-              aria-label={
-                isAutoRotate
-                  ? "Disable auto room change"
-                  : "Enable auto room change"
-              }
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                <path d="M12 5V1l7 7-7 7V9c-3.31 0-6 2.69-6 6 0 1.1.29 2.13.79 3.03L5 19c-.65-1.18-1-2.54-1-4 0-4.42 3.58-8 8-8z" />
-              </svg>
-            </button>
-
-            </div>
-
-            {/* Volume indicator (row 2) */}
-            <div className="flex items-center gap-1 pl-2 pr-3">
+              </button>
+              <button
+                onClick={handleToggleMute}
+                className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
+                aria-label={isMuted ? "Unmute" : "Mute"}
+                title={isMuted ? "Unmute" : "Mute"}
+              >
+                {isMuted ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path d="M5 9v6h4l5 5V4L9 9H5zm12.59.59L16.17 11l1.42 1.41L19.41 11l1.41 1.41 1.41-1.41L20.83 9.59l1.4-1.41-1.41-1.41L19.41 8.17l-1.41-1.4-1.41 1.41 1.41 1.41z" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-5 w-5"
+                  >
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM14 3.23v2.06c2.89 1.09 5 3.9 5 7.71s-2.11 6.62-5 7.71v2.06c4.01-1.17 7-4.93 7-9.77s-2.99-8.6-7-9.77z" />
+                  </svg>
+                )}
+              </button>
               {Array.from({ length: 12 }).map((_, i) => (
                 <span
                   key={i}
@@ -441,25 +429,36 @@ export default function App() {
               ))}
             </div>
 
-            {/* Music open + label (row 3) */}
-            <div className="flex items-center gap-2 text-sm opacity-90">
-              <button
-                onClick={openPicker}
-                className="rounded bg-white/10 p-1 hover:bg-white/20"
-                aria-label="Choose room"
-                title="Choose room"
-              >
-                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 opacity-80">
-                  <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
-                </svg>
-              </button>
-              <span className="truncate">
-                coffee shop radio // 24/7 lofi hip-hop beats — room {currentIndex + 1}/10
-              </span>
-            </div>
-          </div>
+            {/* Music open + label moved to bottom-right corner */}
           </div>
         </div>
       </div>
+
+      {/* Bottom-right music label + picker trigger */}
+      <div className="pointer-events-none absolute inset-0 z-20 flex items-end justify-end p-4">
+        <div className="pointer-events-auto mb-1 rounded-md border border-white/10 bg-black/35 px-3 py-2 text-white shadow-lg backdrop-blur-sm">
+          <div className="flex items-center gap-2 text-sm opacity-90">
+            <button
+              onClick={openPicker}
+              className="rounded bg-white/10 p-1 hover:bg-white/20"
+              aria-label="Choose room"
+              title="Choose room"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-4 w-4 opacity-80"
+              >
+                <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
+              </svg>
+            </button>
+            <span className="truncate max-w-[60vw] sm:max-w-[40vw] md:max-w-[30vw]">
+              coffee shop radio // 24/7 lofi hip-hop beats — room{" "}
+              {currentIndex + 1}/10
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
