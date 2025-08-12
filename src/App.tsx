@@ -7,7 +7,6 @@ import {
   FaVolumeUp,
   FaVolumeMute,
   FaRedoAlt,
-  FaMusic,
 } from "react-icons/fa";
 
 const TOTAL_BACKGROUNDS = 10;
@@ -307,21 +306,25 @@ export default function App() {
               aria-label={isPlaying ? "Pause" : "Play"}
               title={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? renderIcon(FaPause) : renderIcon(FaPlay)}
+              {isPlaying ? (
+                <FaPause className="h-5 w-5" />
+              ) : (
+                <FaPlay className="h-5 w-5" />
+              )}
             </button>
             <button
               onClick={handlePrev}
               className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
               aria-label="Previous background"
             >
-              {renderIcon(FaStepBackward)}
+              <FaStepBackward className="h-5 w-5" />
             </button>
             <button
               onClick={handleNext}
               className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
               aria-label="Next background"
             >
-              {renderIcon(FaStepForward)}
+              <FaStepForward className="h-5 w-5" />
             </button>
             <button
               onClick={handleToggleMute}
@@ -329,7 +332,11 @@ export default function App() {
               aria-label={isMuted ? "Unmute" : "Mute"}
               title={isMuted ? "Unmute" : "Mute"}
             >
-              {isMuted ? renderIcon(FaVolumeMute) : renderIcon(FaVolumeUp)}
+              {isMuted ? (
+                <FaVolumeMute className="h-5 w-5" />
+              ) : (
+                <FaVolumeUp className="h-5 w-5" />
+              )}
             </button>
             <button
               onClick={handleToggleAutoRotate}
@@ -342,7 +349,7 @@ export default function App() {
                   : "Enable auto room change"
               }
             >
-              {renderIcon(FaRedoAlt)}
+              <FaRedoAlt className="h-5 w-5" />
             </button>
 
             {/* Volume indicator */}
@@ -363,7 +370,13 @@ export default function App() {
 
             {/* Track label */}
             <div className="flex items-center gap-2 truncate text-sm opacity-90">
-              {renderIcon(FaMusic, "opacity-80")}
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-4 w-4 opacity-80"
+              >
+                <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
+              </svg>
               <span className="truncate">
                 coffee shop radio // 24/7 lofi hip-hop beats — room{" "}
                 {currentIndex + 1}/10
