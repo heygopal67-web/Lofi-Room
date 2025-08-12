@@ -329,9 +329,6 @@ export default function App() {
   // Number of bars to fill based on current displayVolume
   const filledBars = Math.max(0, Math.min(12, Math.round(displayVolume * 12)));
 
-  // Not used (kept for future slider)
-  const handleVolumeChange: React.ChangeEventHandler<HTMLInputElement> = () => {};
-
   const setVolumeByFraction = (fraction: number) => {
     const next = Math.max(0, Math.min(1, fraction));
     setVolume(next);
@@ -512,7 +509,7 @@ export default function App() {
                   </svg>
                 )}
               </button>
-              <div className="flex items-center gap-3 pl-2 pr-3">
+              <div className="flex items-center gap-1 pl-2 pr-3 cursor-pointer">
                 {Array.from({ length: 12 }).map((_, i) => (
                   <button
                     key={i}
