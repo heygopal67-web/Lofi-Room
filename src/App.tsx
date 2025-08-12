@@ -57,6 +57,7 @@ export default function App() {
   const [volume, setVolume] = useState(1);
   const [displayVolume, setDisplayVolume] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [roomTitles, setRoomTitles] = useState<string[]>(
     TRACKS.map((t, i) => `${t.title} — room ${i + 1}`)
   );
@@ -372,8 +373,8 @@ export default function App() {
       className="relative min-h-screen w-full select-none overflow-hidden bg-black"
       onClickCapture={handleFirstInteraction}
     >
-      {/* Top-right fullscreen toggle */}
-      <div className="absolute right-3 top-3 z-30">
+      {/* Top-right fullscreen + settings */}
+      <div className="absolute right-3 top-3 z-30 flex gap-2">
         <button
           onClick={toggleFullscreen}
           className="rounded bg-white/10 p-2 text-white hover:bg-white/20 backdrop-blur-sm"
@@ -390,7 +391,67 @@ export default function App() {
             </svg>
           )}
         </button>
+        <button
+          onClick={() => setIsSettingsOpen((s) => !s)}
+          className="rounded bg-white/10 p-2 text-white hover:bg-white/20 backdrop-blur-sm"
+          aria-label={isSettingsOpen ? "Close settings" : "Open settings"}
+          title={isSettingsOpen ? "Close settings" : "Open settings"}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+            <path d="M19.14,12.94a7.43,7.43,0,0,0,.05-.94,7.43,7.43,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65A.5.5,0,0,0,13.67,2H10.33a.5.5,0,0,0-.49.42L9.46,5.07a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L4.86,11.06a7.43,7.43,0,0,0-.05.94,7.43,7.43,0,0,0,.05.94L2.75,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.49.42h3.34a.5.5,0,0,0,.49-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+          </svg>
+        </button>
       </div>
+
+      {isSettingsOpen && (
+        <div className="absolute right-3 top-14 z-30 w-64 rounded-md border border-white/10 bg-black/70 p-3 text-white shadow-lg backdrop-blur-md">
+          <div className="mb-2 text-sm font-medium">Music settings</div>
+          <div className="mb-3">
+            <label className="mb-1 block text-xs opacity-80">
+              Volume: {Math.round(volume * 100)}%
+            </label>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={Math.round(volume * 100)}
+              onChange={(e) => {
+                const next = Math.max(
+                  0,
+                  Math.min(1, Number(e.target.value) / 100)
+                );
+                setVolume(next);
+                const audio = currentAudioRef.current;
+                if (audio && !isMuted) {
+                  audio.volume = next;
+                  setDisplayVolume(next);
+                } else if (isMuted) {
+                  setDisplayVolume(0);
+                } else {
+                  setDisplayVolume(next);
+                }
+              }}
+              className="h-2 w-full cursor-pointer appearance-none rounded bg-white/10 accent-white/80"
+              aria-label="Volume"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <button
+              onClick={handleToggleMute}
+              className="rounded bg-white/10 px-3 py-1 text-sm hover:bg-white/20"
+            >
+              {isMuted ? "Unmute" : "Mute"}
+            </button>
+            <button
+              onClick={() => setIsSettingsOpen(false)}
+              className="rounded bg-white/10 px-3 py-1 text-sm hover:bg-white/20"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       {/* Background layers (double-buffered GIF crossfade) */}
       <img
         src={layerSrcs[0]}
