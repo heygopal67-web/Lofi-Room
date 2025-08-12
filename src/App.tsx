@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 
 const TOTAL_BACKGROUNDS = 10;
 
-// Static mapping to music files placed in public/bgm
 // Order matches room index 1..10
 const TRACKS: { src: string; title: string }[] = [
   {
@@ -57,6 +56,7 @@ export default function App() {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [volume, setVolume] = useState(1);
   const [displayVolume, setDisplayVolume] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [roomTitles, setRoomTitles] = useState<string[]>(
     TRACKS.map((t, i) => `${t.title} — room ${i + 1}`)
   );
@@ -347,11 +347,50 @@ export default function App() {
     }
   };
 
+  // Fullscreen
+  useEffect(() => {
+    const onFsChange = () =>
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", onFsChange);
+    return () => document.removeEventListener("fullscreenchange", onFsChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen?.();
+      } else {
+        await document.exitFullscreen?.();
+      }
+    } catch {
+      // ignore
+    }
+  };
+
   return (
     <div
       className="relative min-h-screen w-full select-none overflow-hidden bg-black"
       onClickCapture={handleFirstInteraction}
     >
+      {/* Top-right fullscreen toggle */}
+      <div className="absolute right-3 top-3 z-30">
+        <button
+          onClick={toggleFullscreen}
+          className="rounded bg-white/10 p-2 text-white hover:bg-white/20 backdrop-blur-sm"
+          aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+        >
+          {isFullscreen ? (
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+              <path d="M7 14H5v5h5v-2H7v-3zm0-4h3V7h2v5H7V7zm10 7h-3v2h5v-5h-2v3zm0-11h-5v2h3v3h2V6z" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+              <path d="M7 7h3V5H5v5h2V7zm7-2v2h3v3h2V5h-5zm3 12h-3v2h5v-5h-2v3zM7 14H5v5h5v-2H7v-3z" />
+            </svg>
+          )}
+        </button>
+      </div>
       {/* Background layers (double-buffered GIF crossfade) */}
       <img
         src={layerSrcs[0]}
