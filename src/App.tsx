@@ -432,7 +432,7 @@ export default function App() {
       </div>
 
       {isSettingsOpen && (
-        <div className="absolute right-3 top-14 z-30 w-64 rounded-md border border-white/10 bg-black/70 p-3 text-white shadow-lg backdrop-blur-md">
+        <div className="absolute right-3 top-14 z-30 w-72 rounded-md border border-white/10 bg-black/70 p-3 text-white shadow-lg backdrop-blur-md">
           <div className="mb-2 text-sm font-medium">Music settings</div>
           <div className="mb-3">
             <label className="mb-1 block text-xs opacity-80">
@@ -462,6 +462,55 @@ export default function App() {
               }}
               className="h-2 w-full cursor-pointer appearance-none rounded bg-white/10 accent-white/80"
               aria-label="Volume"
+            />
+          </div>
+          <div className="mb-3">
+            <label className="mb-1 block text-xs opacity-80">
+              Crossfade (ms): {xfadeMs}
+            </label>
+            <input
+              type="range"
+              min={200}
+              max={2000}
+              step={50}
+              value={xfadeMs}
+              onChange={(e) => setXfadeMs(Number(e.target.value))}
+              className="h-2 w-full cursor-pointer appearance-none rounded bg-white/10 accent-white/80"
+              aria-label="Crossfade duration"
+            />
+          </div>
+          <div className="mb-3">
+            <label className="mb-1 block text-xs opacity-80">
+              Auto rotate every (s): {Math.round(autoRotateMs / 1000)}
+            </label>
+            <input
+              type="range"
+              min={5}
+              max={60}
+              step={1}
+              value={Math.round(autoRotateMs / 1000)}
+              onChange={(e) => setAutoRotateMs(Number(e.target.value) * 1000)}
+              className="h-2 w-full cursor-pointer appearance-none rounded bg-white/10 accent-white/80"
+              aria-label="Auto rotate interval"
+            />
+          </div>
+          <div className="mb-3">
+            <label className="mb-1 block text-xs opacity-80">
+              Ambient rain: {Math.round(rainVol * 100)}%
+            </label>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={Math.round(rainVol * 100)}
+              onChange={(e) =>
+                setRainVol(
+                  Math.max(0, Math.min(1, Number(e.target.value) / 100))
+                )
+              }
+              className="h-2 w-full cursor-pointer appearance-none rounded bg-white/10 accent-white/80"
+              aria-label="Ambient rain volume"
             />
           </div>
           <div className="flex items-center justify-between">
