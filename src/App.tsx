@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import type { IconType } from "react-icons";
 
 const TOTAL_BACKGROUNDS = 10;
 const IMAGE_FADE_MS = 700; // 0.7s crossfade for GIFs
@@ -30,6 +31,8 @@ export default function App() {
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const nextAudioRef = useRef<HTMLAudioElement | null>(null);
   const fadeIntervalRef = useRef<number | null>(null);
+  const renderIcon = (Icon: IconType, className?: string) =>
+    React.createElement(Icon, { className });
 
   // Ensure both layers start with the initial background
   useEffect(() => {
@@ -294,21 +297,21 @@ export default function App() {
               aria-label={isPlaying ? "Pause" : "Play"}
               title={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? "⏸" : "▶"}
+              {isPlaying ? renderIcon(FaPause) : renderIcon(FaPlay)}
             </button>
             <button
               onClick={handlePrev}
               className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
               aria-label="Previous background"
             >
-              ⏮
+              {renderIcon(FaStepBackward)}
             </button>
             <button
               onClick={handleNext}
               className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
               aria-label="Next background"
             >
-              ⏭
+              {renderIcon(FaStepForward)}
             </button>
             <button
               onClick={handleToggleMute}
@@ -316,7 +319,7 @@ export default function App() {
               aria-label={isMuted ? "Unmute" : "Mute"}
               title={isMuted ? "Unmute" : "Mute"}
             >
-              {isMuted ? "🔇" : "🔊"}
+              {isMuted ? renderIcon(FaVolumeMute) : renderIcon(FaVolumeUp)}
             </button>
             <button
               onClick={handleToggleAutoRotate}
@@ -329,7 +332,7 @@ export default function App() {
                   : "Enable auto room change"
               }
             >
-              🔁
+              {renderIcon(FaRedoAlt)}
             </button>
 
             {/* Volume indicator */}
@@ -349,9 +352,12 @@ export default function App() {
             </div>
 
             {/* Track label */}
-            <div className="truncate text-sm opacity-90">
-              ♪ coffee shop radio // 24/7 lofi hip-hop beats — room{" "}
-              {currentIndex + 1}/10
+            <div className="flex items-center gap-2 truncate text-sm opacity-90">
+              {renderIcon(FaMusic, "opacity-80")}
+              <span className="truncate">
+                coffee shop radio // 24/7 lofi hip-hop beats — room{" "}
+                {currentIndex + 1}/10
+              </span>
             </div>
           </div>
         </div>
