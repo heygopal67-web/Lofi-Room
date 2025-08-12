@@ -58,6 +58,10 @@ export default function App() {
   const [displayVolume, setDisplayVolume] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [autoRotateMs, setAutoRotateMs] = useState(AUTO_ROTATE_INTERVAL_MS);
+  const [xfadeMs, setXfadeMs] = useState(800);
+  const [rainVol, setRainVol] = useState(0);
+  const rainRef = useRef<HTMLAudioElement | null>(null);
   const [roomTitles, setRoomTitles] = useState<string[]>(
     TRACKS.map((t, i) => `${t.title} — room ${i + 1}`)
   );
@@ -126,9 +130,9 @@ export default function App() {
     const id = window.setInterval(() => {
       const newIndex = (currentIndex + 1) % TOTAL_BACKGROUNDS;
       switchBackgroundTo(newIndex);
-    }, AUTO_ROTATE_INTERVAL_MS);
+    }, autoRotateMs);
     return () => window.clearInterval(id);
-  }, [isAutoRotate, currentIndex]);
+  }, [isAutoRotate, currentIndex, autoRotateMs]);
 
   const clearFadeInterval = () => {
     if (fadeIntervalRef.current) {
@@ -181,7 +185,10 @@ export default function App() {
     // Crossfade
     clearFadeInterval();
     const intervalMs = 50;
-    const steps = Math.max(1, Math.round(AUDIO_CROSSFADE_MS / intervalMs));
+    const steps = Math.max(
+      1,
+      Math.round((xfadeMs || AUDIO_CROSSFADE_MS) / intervalMs)
+    );
     let step = 0;
     const startVolCurrent = current.volume;
 
@@ -367,6 +374,27 @@ export default function App() {
       // ignore
     }
   };
+
+  // Ambient rain loop
+  useEffect(() => {
+    if (!rainRef.current) {
+      const a = new Audio("/ambient/rain.mp3");
+      a.loop = true;
+      a.volume = rainVol;
+      rainRef.current = a;
+      if (rainVol > 0) {
+        void a.play().catch(() => {});
+      }
+      return;
+    }
+    const a = rainRef.current;
+    a.volume = rainVol;
+    if (rainVol > 0) {
+      void a.play().catch(() => {});
+    } else {
+      a.pause();
+    }
+  }, [rainVol]);
 
   return (
     <div
