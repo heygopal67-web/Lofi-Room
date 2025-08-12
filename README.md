@@ -1,46 +1,124 @@
-# Getting Started with Create React App
+# Lofi Room
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A cozy space with looping lofi GIFs and relaxing beats — your perfect background for studying, working, or just unwinding.
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+The app displays full‑screen animated GIF backgrounds and plays a matching MP3 per room. It crossfades audio and images when switching rooms. A compact player provides essential controls and a room picker. A settings panel exposes useful tuning options.
 
-### `npm start`
+## Requirements and assets
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Place the following files under `public/`:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Background GIFs (required)
 
-### `npm test`
+```
+public/
+  bg1.gif
+  bg2.gif
+  ...
+  bg10.gif
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Music tracks (required, mapped by index)
 
-### `npm run build`
+```
+public/
+  bgm/
+    good-night-lofi-cozy-cafe-1.mp3
+    lofi-relax-music-lofium-2.mp3
+    lofi-295209.mp3
+    lofi-relax-lofi-4.mp3
+    spring-lofi-vibes-lofi-5.mp3
+    walking-dreaming-chill-lofi-6.mp3
+    focus-zone-relax-mellow-lofi-7.mp3
+    lofi-background-music-8.mp3
+    rainy-lofi-city-lofi-9.mp3
+    lofi-girl-lofi-ambient-10.mp3
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Optional ambient sounds
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+public/
+  ambient/
+    rain.mp3
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Optional room titles
 
-### `npm run eject`
+Create `public/rooms.json` (array of 10 strings) to override displayed titles.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```json
+[
+  "Good Night Lofi — Cozy Cafe — room 1",
+  "Lofi Relax Music — room 2",
+  "Lofi 295209 — room 3",
+  "Lofi Relax — room 4",
+  "Spring Lofi Vibes — room 5",
+  "Walking Dreaming Chill Lofi — room 6",
+  "Focus Zone — Relax and Mellow — room 7",
+  "Lofi Background Music — room 8",
+  "Rainy Lofi City — room 9",
+  "Lofi Girl — Ambient — room 10"
+]
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+If `rooms.json` is not present, titles are derived from the file mapping in code.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Quick start
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm install
+npm start
+```
 
-## Learn More
+Open http://localhost:3000
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Tailwind is already configured; no extra steps are required.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Controls
+
+- Play/Pause, Previous, Next, Mute
+- Volume meter: click any bar to set volume
+- Auto‑rotate toggle: cycles rooms at a set interval
+- Room picker (bottom‑right): choose any room
+- Fullscreen toggle (top‑right)
+- Settings (top‑right)
+
+## Settings panel
+
+- Volume
+- Crossfade duration (audio)
+- Auto‑rotate interval (seconds)
+- Ambient rain volume (requires `public/ambient/rain.mp3`)
+
+Changes apply immediately. Audio starts after the first user gesture due to autoplay rules.
+
+## How room mapping works
+
+- Room index N uses `bgN.gif` and the Nth entry in the `TRACKS` list defined in `src/App.tsx` (under the `TRACKS` constant). If you prefer to keep names stable but change files, replace the MP3 files in `public/bgm/` using the same order or adjust the `TRACKS` list.
+
+## Build
+
+```bash
+npm run build
+```
+
+Outputs production files to `build/`.
+
+## Troubleshooting
+
+- Audio does not start: click anywhere in the page first (browser autoplay policy).
+- Styles look unstyled: restart the dev server after installing dependencies; ensure `src/index.css` contains the Tailwind directives.
+- Missing assets: confirm filenames and paths match the structure above.
+
+## License
+
+MIT.
+
+thanks guys for reading this file hope you enjoyed this lofi room project and please let me know your feedback... im adding more assests in future
+
+keep loving...
+
+thanks again :)
