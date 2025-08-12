@@ -415,19 +415,23 @@ export default function App() {
                   </svg>
                 )}
               </button>
-              {Array.from({ length: 12 }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`inline-block h-3 w-1 rounded-sm ${
-                    isMuted
-                      ? "bg-white/20"
-                      : i < 9
-                      ? "bg-white/80"
-                      : "bg-white/40"
-                  }`}
-                />
-              ))}
+              <div className="flex items-center gap-1 pl-2 pr-3">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`inline-block h-3 w-1 rounded-sm ${
+                      isMuted
+                        ? "bg-white/20"
+                        : i < 9
+                        ? "bg-white/80"
+                        : "bg-white/40"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
+
+            {/* Volume indicator (row 2) */}
 
             {/* Music open + label moved to bottom-right corner */}
           </div>
