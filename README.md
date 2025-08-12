@@ -105,14 +105,6 @@ Changes apply immediately. Audio starts after the first user gesture due to auto
 npm run build
 ```
 
-Outputs production files to `build/`.
-
-## Troubleshooting
-
-- Audio does not start: click anywhere in the page first (browser autoplay policy).
-- Styles look unstyled: restart the dev server after installing dependencies; ensure `src/index.css` contains the Tailwind directives.
-- Missing assets: confirm filenames and paths match the structure above.
-
 ## License
 
 MIT.
