@@ -339,7 +339,8 @@ export default function App() {
       {/* Bottom-left player bar */}
       <div className="pointer-events-none absolute inset-0 z-20 flex items-end justify-start p-4">
         <div className="pointer-events-auto mb-1 max-w-[min(96vw,980px)] rounded-md border border-white/10 bg-black/35 px-3 py-2 text-white shadow-lg backdrop-blur-sm">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
             <button
               onClick={handlePlayPause}
               className="rounded-md bg-white/15 px-3 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
@@ -422,7 +423,9 @@ export default function App() {
               </svg>
             </button>
 
-            {/* Volume indicator */}
+            </div>
+
+            {/* Volume indicator (row 2) */}
             <div className="flex items-center gap-1 pl-2 pr-3">
               {Array.from({ length: 12 }).map((_, i) => (
                 <span
@@ -438,30 +441,25 @@ export default function App() {
               ))}
             </div>
 
-            {/* Track label */}
-            <div className="flex items-center gap-2 truncate text-sm opacity-90">
+            {/* Music open + label (row 3) */}
+            <div className="flex items-center gap-2 text-sm opacity-90">
               <button
                 onClick={openPicker}
                 className="rounded bg-white/10 p-1 hover:bg-white/20"
                 aria-label="Choose room"
                 title="Choose room"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-4 w-4 opacity-80"
-                >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 opacity-80">
                   <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
                 </svg>
               </button>
               <span className="truncate">
-                coffee shop radio // 24/7 lofi hip-hop beats — room{" "}
-                {currentIndex + 1}/10
+                coffee shop radio // 24/7 lofi hip-hop beats — room {currentIndex + 1}/10
               </span>
             </div>
           </div>
+          </div>
         </div>
       </div>
-    </div>
   );
 }
