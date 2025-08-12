@@ -1,5 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import type { IconType } from "react-icons";
+import {
+  FaPlay,
+  FaPause,
+  FaStepBackward,
+  FaStepForward,
+  FaVolumeUp,
+  FaVolumeMute,
+  FaRedoAlt,
+  FaMusic,
+} from "react-icons/fa";
 
 const TOTAL_BACKGROUNDS = 10;
 const IMAGE_FADE_MS = 700; // 0.7s crossfade for GIFs
@@ -31,8 +40,9 @@ export default function App() {
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const nextAudioRef = useRef<HTMLAudioElement | null>(null);
   const fadeIntervalRef = useRef<number | null>(null);
-  const renderIcon = (Icon: IconType, className?: string) =>
-    React.createElement(Icon, { className });
+  const renderIcon = (Icon: React.ElementType, className?: string) => (
+    <Icon className={className} />
+  );
 
   // Ensure both layers start with the initial background
   useEffect(() => {
