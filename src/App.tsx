@@ -55,6 +55,7 @@ export default function App() {
   const [isAutoRotate, setIsAutoRotate] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [volume, setVolume] = useState(1);
   const [displayVolume, setDisplayVolume] = useState(0);
   const [roomTitles, setRoomTitles] = useState<string[]>(
     TRACKS.map((t, i) => `${t.title} — room ${i + 1}`)
@@ -147,7 +148,7 @@ export default function App() {
   };
 
   const crossfadeToIndex = async (newIndex: number) => {
-    const targetVolume = isMuted ? 0 : 1;
+    const targetVolume = isMuted ? 0 : volume;
     const newSrc = getMusicSrc(newIndex);
 
     // If no current audio, start new track directly (after first user interaction)
@@ -272,7 +273,7 @@ export default function App() {
   const handleToggleMute = () => {
     const newMuted = !isMuted;
     setIsMuted(newMuted);
-    const target = newMuted ? 0 : 1;
+    const target = newMuted ? 0 : volume;
     fadeCurrentVolumeTo(target, VOLUME_FADE_MS);
   };
 
@@ -298,7 +299,7 @@ export default function App() {
       // Start current track
       await crossfadeToIndex(currentIndex);
     } else {
-      audio.volume = isMuted ? 0 : 1;
+      audio.volume = isMuted ? 0 : volume;
       try {
         await audio.play();
         setDisplayVolume(audio.volume);
@@ -327,6 +328,27 @@ export default function App() {
 
   // Number of bars to fill based on current displayVolume
   const filledBars = Math.max(0, Math.min(12, Math.round(displayVolume * 12)));
+
+  // Not used (kept for future slider)
+  const handleVolumeChange: React.ChangeEventHandler<HTMLInputElement> = () => {};
+
+  const setVolumeByFraction = (fraction: number) => {
+    const next = Math.max(0, Math.min(1, fraction));
+    setVolume(next);
+    const audio = currentAudioRef.current;
+    if (audio) {
+      if (isMuted) {
+        setIsMuted(false);
+        audio.volume = 0;
+        fadeCurrentVolumeTo(next, 150);
+      } else {
+        audio.volume = next;
+        setDisplayVolume(next);
+      }
+    } else {
+      setDisplayVolume(next);
+    }
+  };
 
   return (
     <div
@@ -490,17 +512,22 @@ export default function App() {
                   </svg>
                 )}
               </button>
-              <div className="flex items-center gap-1 pl-2 pr-3">
+              <div className="flex items-center gap-3 pl-2 pr-3">
                 {Array.from({ length: 12 }).map((_, i) => (
-                  <span
+                  <button
                     key={i}
-                    className={`inline-block h-3 w-1 rounded-sm ${
+                    onClick={() => setVolumeByFraction((i + 1) / 12)}
+                    className={`inline-block h-3 w-1 rounded-sm transition-colors ${
                       isMuted
                         ? "bg-white/20"
                         : i < filledBars
                         ? "bg-white/80"
                         : "bg-white/30"
                     }`}
+                    title={`Set volume to ${Math.round(((i + 1) / 12) * 100)}%`}
+                    aria-label={`Set volume to ${Math.round(
+                      ((i + 1) / 12) * 100
+                    )}%`}
                   />
                 ))}
               </div>
