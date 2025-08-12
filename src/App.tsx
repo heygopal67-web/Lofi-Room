@@ -1,13 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  FaPlay,
-  FaPause,
-  FaStepBackward,
-  FaStepForward,
-  FaVolumeUp,
-  FaVolumeMute,
-  FaRedoAlt,
-} from "react-icons/fa";
 
 const TOTAL_BACKGROUNDS = 10;
 const IMAGE_FADE_MS = 700; // 0.7s crossfade for GIFs
@@ -35,6 +26,7 @@ export default function App() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isAutoRotate, setIsAutoRotate] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const nextAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -246,6 +238,14 @@ export default function App() {
     }
   };
 
+  // Background gallery (room picker)
+  const openPicker = () => setIsPickerOpen(true);
+  const closePicker = () => setIsPickerOpen(false);
+  const handleSelectIndex = (index: number) => {
+    switchBackgroundTo(index);
+    setIsPickerOpen(false);
+  };
+
   // Start playback on first user interaction (any click inside the app)
   const handleFirstInteraction = () => {
     if (!hasInteracted) {
@@ -286,6 +286,46 @@ export default function App() {
         }}
       />
 
+      {/* Room picker overlay */}
+      {isPickerOpen && (
+        <div className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/80 p-6 backdrop-blur-sm">
+          <div className="relative w-full max-w-6xl">
+            <button
+              onClick={closePicker}
+              className="absolute right-0 top-0 rounded bg-white/10 px-3 py-1 text-white hover:bg-white/20"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+            <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              {Array.from({ length: TOTAL_BACKGROUNDS }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSelectIndex(i)}
+                  className={`group overflow-hidden rounded-lg border border-white/10 bg-black/30 text-left text-white transition hover:bg-white/10 ${
+                    i === currentIndex
+                      ? "ring-2 ring-emerald-400 ring-offset-2 ring-offset-black"
+                      : ""
+                  }`}
+                >
+                  <img
+                    src={getBgSrc(i)}
+                    alt={`Room ${i + 1}`}
+                    className="h-40 w-full object-cover"
+                  />
+                  <div className="flex items-center justify-between px-2 py-1 text-xs">
+                    <span className="truncate opacity-90">Room {i + 1}</span>
+                    <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] text-emerald-300">
+                      Select
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top-left listening now */}
       <div className="absolute left-4 top-4 z-20 text-white/90 drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]">
         <div className="mb-1 text-sm uppercase tracking-widest">
@@ -307,9 +347,21 @@ export default function App() {
               title={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
-                <FaPause className="h-5 w-5" />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-5 w-5"
+                >
+                  <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+                </svg>
               ) : (
-                <FaPlay className="h-5 w-5" />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-5 w-5"
+                >
+                  <path d="M8 5v14l11-7z" />
+                </svg>
               )}
             </button>
             <button
@@ -317,14 +369,18 @@ export default function App() {
               className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
               aria-label="Previous background"
             >
-              <FaStepBackward className="h-5 w-5" />
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+                <path d="M6 6h2v12H6zM20 6v12L9 12z" />
+              </svg>
             </button>
             <button
               onClick={handleNext}
               className="rounded-md bg-white/15 px-2 py-1 text-lg hover:bg-white/25 active:scale-95 transition"
               aria-label="Next background"
             >
-              <FaStepForward className="h-5 w-5" />
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+                <path d="M16 6h2v12h-2zM4 6l11 6-11 6z" />
+              </svg>
             </button>
             <button
               onClick={handleToggleMute}
@@ -333,9 +389,21 @@ export default function App() {
               title={isMuted ? "Unmute" : "Mute"}
             >
               {isMuted ? (
-                <FaVolumeMute className="h-5 w-5" />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-5 w-5"
+                >
+                  <path d="M5 9v6h4l5 5V4L9 9H5zm12.59.59L16.17 11l1.42 1.41L19.41 11l1.41 1.41 1.41-1.41L20.83 9.59l1.4-1.41-1.41-1.41L19.41 8.17l-1.41-1.4-1.41 1.41 1.41 1.41z" />
+                </svg>
               ) : (
-                <FaVolumeUp className="h-5 w-5" />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-5 w-5"
+                >
+                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.06c1.48-.74 2.5-2.26 2.5-4.03zM14 3.23v2.06c2.89 1.09 5 3.9 5 7.71s-2.11 6.62-5 7.71v2.06c4.01-1.17 7-4.93 7-9.77s-2.99-8.6-7-9.77z" />
+                </svg>
               )}
             </button>
             <button
@@ -349,7 +417,9 @@ export default function App() {
                   : "Enable auto room change"
               }
             >
-              <FaRedoAlt className="h-5 w-5" />
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+                <path d="M12 5V1l7 7-7 7V9c-3.31 0-6 2.69-6 6 0 1.1.29 2.13.79 3.03L5 19c-.65-1.18-1-2.54-1-4 0-4.42 3.58-8 8-8z" />
+              </svg>
             </button>
 
             {/* Volume indicator */}
@@ -370,13 +440,20 @@ export default function App() {
 
             {/* Track label */}
             <div className="flex items-center gap-2 truncate text-sm opacity-90">
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-4 w-4 opacity-80"
+              <button
+                onClick={openPicker}
+                className="rounded bg-white/10 p-1 hover:bg-white/20"
+                aria-label="Choose room"
+                title="Choose room"
               >
-                <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
-              </svg>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-4 w-4 opacity-80"
+                >
+                  <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
+                </svg>
+              </button>
               <span className="truncate">
                 coffee shop radio // 24/7 lofi hip-hop beats — room{" "}
                 {currentIndex + 1}/10
